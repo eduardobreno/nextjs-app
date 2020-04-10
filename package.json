@@ -1,12 +1,11 @@
 {
-  "name": "@nextjs-monorepo/site",
+  "name": "nextjs-app",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build:dev": "DEV=YES next build",
-    "build:staging": "STAGING=YES next build",
-    "build:production": "PRODUCTION=YES next build",
+    "dev": "SERVER=DEVELOP next dev",
+    "build:dev": "SERVER=DEVELOP next build",
+    "build:staging": "SERVER=STAGING next build",
+    "build:production": "SERVER=PRODUCTION next build",
     "start": "next start"
   },
   "dependencies": {

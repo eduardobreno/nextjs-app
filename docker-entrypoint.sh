@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-echo "DEPLOY_MODE = $1"
+echo "SERVER = $1"
 
 case "$1" in
 NONE)

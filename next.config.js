@@ -1,36 +1,56 @@
 const {
   PHASE_DEVELOPMENT_SERVER,
+  PHASE_PRODUCTION_SERVER,
   PHASE_PRODUCTION_BUILD,
 } = require("next/constants");
-const path = require("path");
 
 const nextConfig = {};
 
 module.exports = (phase) => {
-  console.log("=====> PHASE", phase);
-  console.log("=====> process.env.DEV", process.env.DEV);
-  console.log("=====> process.env.STAGING", process.env.STAGING);
-  console.log("=====> process.env.PRODUCTION", process.env.PRODUCTION);
-
-  const isDev = phase === PHASE_DEVELOPMENT_SERVER || process.env.DEV === "YES";
-  const isProd =
-    phase === PHASE_PRODUCTION_BUILD && process.env.PRODUCTION === "YES";
-  const isStaging =
-    phase === PHASE_PRODUCTION_BUILD && process.env.STAGING === "YES";
-
-  console.log(`isDev:${isDev}  isProd:${isProd}   isStaging:${isStaging}`);
-
+  if (phase !== PHASE_PRODUCTION_SERVER) {
+    console.log(
+      "\n=====> PHASE =",
+      phase,
+      "| process.env.SERVER = ",
+      process.env.SERVER,
+      "\n"
+    );
+  }
   const env = {
-    BASE_URL: (() => {
-      if (isDev) return "URL_DEV";
-      if (isProd) return "URL_PROD";
-      if (isStaging) return "URL_STAGING";
-      return "BASE_URL:not (isDev, isProd, isStaging)";
-    })(),
-    MODE: (() => {
-      return { isDev, isProd, isStaging };
-    })(),
+    APP: {
+      BASE_URL: undefined,
+      MODE: undefined,
+    },
   };
+
+  if ([PHASE_DEVELOPMENT_SERVER, PHASE_PRODUCTION_BUILD].includes(phase)) {
+    switch (process.env.SERVER) {
+      case "DEVELOP":
+        env.APP.BASE_URL = "URL_DEV";
+        env.APP.MODE = process.env.SERVER;
+        break;
+      case "STAGING":
+        env.APP.BASE_URL = "URL_STAGING";
+        env.APP.MODE = process.env.SERVER;
+        break;
+      case "PRODUCTION":
+        env.APP.BASE_URL = "URL_PRODUCTION";
+        env.APP.MODE = process.env.SERVER;
+        break;
+
+      default:
+        throw new Error(
+          "SERVER param not defined, please set SERVER to DEVELOP|STAGING|PRODUCTION"
+        );
+        break;
+    }
+    console.log(env.APP, "\n");
+    if (env.APP.BASE_URL === undefined || env.APP.MODE === undefined) {
+      throw new Error(
+        "APP.BASE_URL AND APP.MODE are not defined, please check build configuration"
+      );
+    }
+  }
 
   return {
     nextConfig,
